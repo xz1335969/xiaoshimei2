@@ -1,9 +1,18 @@
 # 百花谷小师妹
 基于[Nonebot2](https://github.com/nonebot/nonebot2) 和 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp) 的QQ群聊机器人
 
+注：本人纯编程新手，在此代码中你会发现很多垃圾代码，可以发在这里一起讨论怎么改正。
+
+
+
+##主要用途
 用于弹弹堂经典服的基本游戏说明以及各种群内娱乐活动
 
-弹弹堂经典服，回忆童年 [官方网站](https://ddt.wan.com) [经典服网站](http://www.wan.com/index/gameNoLogin.html?url=%2Fgame%2Fplay%2Fid%2F4048.html)
+弹弹堂经典服，回忆童年  
+链接： [弹弹堂官方网站](https://ddt.wan.com) ||
+[经典服网站](http://www.wan.com/index/gameNoLogin.html?url=%2Fgame%2Fplay%2Fid%2F4048.html)
+
+
 
 
 ## 功能
@@ -15,12 +24,12 @@
 3.金币系统还可以玩一些例如猜数字扫雷等小游戏。
 
 
-详细功能请在群内输入 /指令表 查看
+注：本机器人在不断完善中，详细功能请在群内输入 “/指令表” 查看 ~~其实只是因为文档还没写好~~
 
 
 
 ## 其他
-该bot可以安装[Nonebot2插件](https://nb2.baka.icu/store) ，
+该bot可以安装[Nonebot2插件](https://nb2.baka.icu/store) （默认没有安装），
 详见 [Nonebot2文档](https://v2.nonebot.dev/)
 
 

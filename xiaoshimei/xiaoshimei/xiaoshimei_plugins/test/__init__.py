@@ -39,14 +39,15 @@ async def call_daily_league(event: GroupMessageEvent):
 #         await event.reject(bot,"请正确填写武器名称（可以不包括“·”）")
 
 
-test2 = on_regex("[要来][一两12][份张].*[se涩色]图$")
+setu = on_regex("[要来][一两12]?[份张].*[se涩色]图$",rule=to_me(),priority=3)
+setu2 = on_regex("[要来][一1]?[份张]小师妹的?[se涩色]图$",priority=2)
 
 
-@test2.handle()
+@setu.handle()
 async def _(bot:Bot,event:Event):
     arg = event.get_plaintext()
     user_id = event.get_user_id()
-    args = re.findall(r"[要来]([一两12])[份张](.*)[se涩色]图",arg)
+    args = re.findall(r"[要来]([一两12]?)[份张](.*)[se涩色]图",arg)
     num = 2 if args[0] in ["2","两"] else 1
     tag = None if len(args) == 1 else arg[1]
     data = {"size":"original","num":num}
@@ -61,3 +62,10 @@ async def _(bot:Bot,event:Event):
     img = requests.get(img_url)
     bio = BytesIO(img.content)
     await bot.send_private_msg(user_id=int(user_id),message=f"title:{title} \nauthor:{author}\npid:{pid}" + MessageSegment.image(bio))
+    await setu.finish()
+
+
+@setu2.handle()
+async def _(event:GroupMessageEvent):
+    img = "file:///" + __file__.strip("__init__.py") + "..\\basic\\resources\\heisi.jpg"
+    await setu2.finish(MessageSegment.image(img))
