@@ -1,5 +1,5 @@
 from xiaoshimei.xiaoshimei_plugins.goldsystem.cls import *
-from . import createImage,superuser,legendbox,scheduler,simulate_fusion,extra
+from . import createImage,superuser,legendbox,scheduler,simulate_fusion,extra,mine_sweep
 
 
 signin = on_command("signin", aliases={"每日签到", '签到'})
@@ -205,66 +205,6 @@ async def _(event: GroupMessageEvent):
 
 
 
-
-# mine_sweep = on_command("mine_sweep",aliases={"扫雷游戏","挖挖乐2"})
-#
-#
-# class MineSweepGame:
-#     def __init__(self,gold,mine = 50):
-#         self._GAME_OVER = 1
-#         self._GET_GOLD = 2
-#         self._GET_ITEM = 3
-#         self.initgold = gold
-#         mine_map = [0]*100
-#         i = 0
-#         while sum(mine_map)<= mine - 2:
-#             mine_map[i] += random.randint(1,3)
-#             i += 1
-#         while sum(mine_map)<= mine:
-#             mine_map[i] += random.randint(1,50-sum(mine_map))
-#             i += 1
-#         for j in range(i,i+5):
-#             mine_map[j] = "item"
-#         i += 10
-#         for j in range(i,i+20):
-#             mine_map[j] = "gold"
-#         j += 1
-#         while j < 100:
-#             mine_map[j] = "empty"
-#             j += 1
-#         randomlist(mine_map)
-#         self.mine_map = mine_map
-#         self.gold = 0
-#
-#
-#     def __str__(self):
-#         return """扫雷游戏，挖挖乐的升级版、
-#         扫雷说明：10*10的块中一共有50个雷，5个物品格子和20个金币格子。每个格子最多有三个雷，所在格子的数字代表周围8格雷的数量之和，请尝试找出全部的雷吧。踩到地雷游戏结束，你可以随时发送“取消”来结束游戏，获得你的所有物品的一半"""
-#
-#
-#     def sweep(self,block:int):
-#         """
-#         点击地址
-#         :param block: 挖某个格子
-#         :return:结果
-#         """
-#         chosen_block = self.mine_map[block]
-#         if type(chosen_block) == int and chosen_block > 0:
-#             self.game_over()
-#             return self._GAME_OVER
-#         elif chosen_block == "empty":
-#             chosen_block = 0
-#             return 0
-#         elif chosen_block == "gold":
-#             self.gold += int(self.initgold * random.uniform(0.1,0.3))
-#             return
-#
-#
-#     def game_over(self):
-#
-#
-# @mine_sweep.handle()
-# async def _(event:GroupMessageEvent,state:T_State,)
 
 
 
