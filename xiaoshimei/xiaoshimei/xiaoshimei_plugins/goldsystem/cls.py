@@ -1,10 +1,10 @@
 import os, random, datetime
 from .._globals import TYPELIST, EXTRA_MODULES, EXTRA_MODULES3, EXTRA_MODULES2, randomlist, overrandom
 from . import createImage
-from nonebot import on_command, get_bot,on_message,on_keyword,on_regex,on_notice,on_request
+from nonebot import on_command, get_bot, on_message, on_keyword, on_regex, on_notice, on_request
 from nonebot.adapters import Event, Message, MessageTemplate
 from nonebot.adapters.onebot.v11 import MessageSegment, MessageEvent, PrivateMessageEvent, GroupMessageEvent, Bot, \
-    GROUP_ADMIN, GROUP_OWNER, GROUP_MEMBER,RequestEvent,GroupRequestEvent
+    GROUP_ADMIN, GROUP_OWNER, GROUP_MEMBER, RequestEvent, GroupRequestEvent
 from nonebot.matcher import Matcher
 from nonebot.typing import T_State
 from nonebot.permission import SUPERUSER
@@ -19,13 +19,14 @@ INSERT = 2
 DELETE = 3
 
 
-def sqlquery(query_type: int, table: str, field: dict = None, *args, **kwargs):
+def sqlquery(query_type: int, table: str, field: dict = None, *args, fetchone=False, **kwargs):
     """
+    :param fetchone: SELECT使用，是否只选择一条
     :param query_type: SELECT,UPDATE,INSERT,DELETE
     :param table: 表名
     :param field: 查询条件（WHERE后面的）
     :param args: 查询内容，SELECT写列名（list），UPDATE写等号前后数值组成的元组，INSERT写两个元组(A1,A2,A3) VALUES（B1,B2,B3）
-    :param kwargs: 查询条件附加：（WHERE xxx in yyy)
+    :param kwargs: 查询条件附加：（WHERE xxx  yyy)
     :return: SELECT返回查询结果，其他返回 1
     """
     conn = pymysql.connect(host='localhost', user='root', password='xz123456', database='xiaoshimei',
@@ -46,7 +47,10 @@ def sqlquery(query_type: int, table: str, field: dict = None, *args, **kwargs):
                     [f"{k} = {v}" for k, v in field.items()] + [f"{k} {v}" for k, v in kwargs.items()])
             sql = f"SELECT {column} FROM {table} WHERE {fields}"
         cursor.execute(sql)
-        report = cursor.fetchall()
+        if fetchone:
+            report = cursor.fetchone()
+        else:
+            report = cursor.fetchall()
         conn.close()
         return report
     elif query_type == 1:
@@ -96,11 +100,12 @@ def authority(group_id, extra_name=None) -> int:
     return auth
 
 
-def change_authority(group_id,extra_name:list[str],is_open:int):
-    args = [(k,v) for (k,v) in zip(extra_name,[is_open]*len(extra_name))]
-    authority(group_id,"group_id")
-    sqlquery(UPDATE,"authority",{"group_id":group_id},*args)
+def change_authority(group_id, extra_name: list[str], is_open: int):
+    args = [(k, v) for (k, v) in zip(extra_name, [is_open] * len(extra_name))]
+    authority(group_id, "group_id")
+    sqlquery(UPDATE, "authority", {"group_id": group_id}, *args)
     return "模块开启成功" if is_open else "模块关闭成功"
+
 
 class Item:
     def __init__(self, item_id: int, count=0, price=0):
@@ -504,3 +509,15 @@ class Shop:
         return report
 
 
+def get_parameter(group_id, name):
+    result = sqlquery(SELECT, "parameters", {"group_id": group_id}, (name,), fetchone=True)
+    if result is None:
+        sqlquery(INSERT, "parameters", None, ("group_id",), (group_id,))
+        get_parameter(group_id, name)
+    else:
+        return result
+
+
+def change_parameter(group_id, name, value):
+    get_parameter(group_id, name)
+    sqlquery(UPDATE, "parameters", {"group_id": group_id}, (name, value))
