@@ -1,4 +1,4 @@
-import random
+import random,re,pymysql
 
 TYPELIST = {
     "weapon": 0,
@@ -120,3 +120,74 @@ def overrandom(items: list[tuple] | dict):
             i = int(j)
             break
     return keys[i]
+
+
+def sqlquery(query_type: int, table: str, field: dict = None, *args, fetchone=False,others = "", **kwargs):
+    """
+    :param others: 其他的约束条件，写在最末尾
+    :param fetchone: SELECT使用，是否只选择一条
+    :param query_type: SELECT,UPDATE,INSERT,DELETE
+    :param table: 表名
+    :param field: 查询条件（WHERE后面的）
+    :param args: 查询内容，SELECT写列名（list），UPDATE写等号前后数值组成的元组，INSERT写两个元组(A1,A2,A3) VALUES（B1,B2,B3）
+    :param kwargs: 查询条件附加：（WHERE xxx  yyy)
+    :return: SELECT返回查询结果，其他返回 1
+    """
+    conn = pymysql.connect(host='localhost', user='root', password='xz123456', database='xiaoshimei',
+                           charset='utf8mb4')
+    cursor = conn.cursor()
+    if query_type == 0:
+        if len(args) == 0:
+            column = "*"
+        else:
+            column = ",".join(args)
+        if field is None:
+            sql = f"SELECT {column} FROM {table} {others}"
+        else:
+            if len(kwargs) == 0:
+                fields = " AND ".join([f"{k} = {v}" for k, v in field.items()])
+            else:
+                fields = " AND ".join(
+                    [f"{k} = {v}" for k, v in field.items()] + [f"{k} {v}" for k, v in kwargs.items()])
+            sql = f"SELECT {column} FROM {table} WHERE {fields} {others}"
+        cursor.execute(sql)
+        if fetchone:
+            report = cursor.fetchone()
+        else:
+            report = cursor.fetchall()
+        conn.close()
+        return report
+    elif query_type == 1:
+        column = ",".join([f"{k}={v}" for (k, v) in args])
+        if len(kwargs) == 0:
+            fields = " AND ".join([f"{k}={v}" for k, v in field.items()])
+        else:
+            fields = " AND ".join(
+                [f"{k}={v}" for k, v in field.items()] + [f"{k} {v}" for k, v in kwargs.items()])
+        sql = f"UPDATE {table} SET {column} WHERE {fields} {others}"
+        cursor.execute(sql)
+        conn.commit()
+        conn.close()
+        return 1
+    elif query_type == 2:
+        sql = f"INSERT INTO {table} ({','.join([str(i) for i in args[0]])}) VALUES ({','.join([str(i) for i in args[1]])}) {others}"
+        cursor.execute(sql)
+        conn.commit()
+        conn.close()
+        return 1
+    else:
+        if len(kwargs) == 0:
+            fields = " AND ".join([f"{k}={v}" for k, v in field.items()])
+        else:
+            fields = " AND ".join(
+                [f"{k}={v}" for k, v in field.items()] + [f"{k} {v}" for k, v in kwargs.items()])
+        sql = f"DELETE FROM {table} WHERE {fields} {others}"
+        cursor.execute(sql)
+        conn.commit()
+        conn.close()
+        return 1
+
+
+def get_qq(cq_str: str) -> int:
+    qq = re.findall(r"\[CQ:at,qq=(\w+)]", cq_str)
+    return qq[0]

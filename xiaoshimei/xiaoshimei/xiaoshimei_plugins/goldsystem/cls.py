@@ -1,5 +1,5 @@
-import os, random, datetime
-from .._globals import TYPELIST, EXTRA_MODULES, EXTRA_MODULES3, EXTRA_MODULES2, randomlist, overrandom
+import os, random, datetime,re
+from xiaoshimei.xiaoshimei_plugins._globals import TYPELIST, EXTRA_MODULES, EXTRA_MODULES3, EXTRA_MODULES2, randomlist, overrandom,sqlquery,get_qq
 from . import createImage
 from nonebot import on_command, get_bot, on_message, on_keyword, on_regex, on_notice, on_request
 from nonebot.adapters import Event, Message, MessageTemplate
@@ -10,7 +10,6 @@ from nonebot.typing import T_State
 from nonebot.permission import SUPERUSER
 from nonebot.params import State, Depends, CommandArg, Arg, ArgPlainText
 from nonebot.rule import to_me
-import re
 import pymysql
 
 SELECT = 0
@@ -19,74 +18,7 @@ INSERT = 2
 DELETE = 3
 
 
-def sqlquery(query_type: int, table: str, field: dict = None, *args, fetchone=False, **kwargs):
-    """
-    :param fetchone: SELECT使用，是否只选择一条
-    :param query_type: SELECT,UPDATE,INSERT,DELETE
-    :param table: 表名
-    :param field: 查询条件（WHERE后面的）
-    :param args: 查询内容，SELECT写列名（list），UPDATE写等号前后数值组成的元组，INSERT写两个元组(A1,A2,A3) VALUES（B1,B2,B3）
-    :param kwargs: 查询条件附加：（WHERE xxx  yyy)
-    :return: SELECT返回查询结果，其他返回 1
-    """
-    conn = pymysql.connect(host='localhost', user='root', password='xz123456', database='xiaoshimei',
-                           charset='utf8mb4')
-    cursor = conn.cursor()
-    if query_type == 0:
-        if len(args) == 0:
-            column = "*"
-        else:
-            column = ",".join(args)
-        if field is None:
-            sql = f"SELECT {column} FROM {table}"
-        else:
-            if len(kwargs) == 0:
-                fields = " AND ".join([f"{k} = {v}" for k, v in field.items()])
-            else:
-                fields = " AND ".join(
-                    [f"{k} = {v}" for k, v in field.items()] + [f"{k} {v}" for k, v in kwargs.items()])
-            sql = f"SELECT {column} FROM {table} WHERE {fields}"
-        cursor.execute(sql)
-        if fetchone:
-            report = cursor.fetchone()
-        else:
-            report = cursor.fetchall()
-        conn.close()
-        return report
-    elif query_type == 1:
-        column = ",".join([f"{k}={v}" for (k, v) in args])
-        if len(kwargs) == 0:
-            fields = " AND ".join([f"{k}={v}" for k, v in field.items()])
-        else:
-            fields = " AND ".join(
-                [f"{k}={v}" for k, v in field.items()] + [f"{k} {v}" for k, v in kwargs.items()])
-        sql = f"UPDATE {table} SET {column} WHERE {fields}"
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
-        return 1
-    elif query_type == 2:
-        sql = f"INSERT INTO {table} ({','.join([str(i) for i in args[0]])}) VALUES ({','.join([str(i) for i in args[1]])})"
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
-        return 1
-    else:
-        if len(kwargs) == 0:
-            fields = " AND ".join([f"{k}={v}" for k, v in field.items()])
-        else:
-            fields = " AND ".join(
-                [f"{k}={v}" for k, v in field.items()] + [f"{k} {v}" for k, v in kwargs.items()])
-        sql = f"DELETE FROM {table} WHERE {fields}"
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
-        return 1
 
-
-def get_qq(cq_str: str) -> int:
-    qq = re.findall(r"\[CQ:at,qq=(\w+)]", cq_str)
-    return qq[0]
 
 
 def authority(group_id, extra_name=None) -> int:
