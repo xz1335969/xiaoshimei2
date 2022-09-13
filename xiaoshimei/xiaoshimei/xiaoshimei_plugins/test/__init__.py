@@ -43,9 +43,9 @@ async def _(bot:Bot,event: GroupMessageEvent, state: T_State, arg: Message = Com
     if await GROUP_ADMIN(bot,event) or GROUP_OWNER(bot,event):
         args = arg.extract_plain_text().strip().split()
         if len(args) >= 1:
-            state["question"] = args[1]
+            state["question"] = args[0].strip()
             if len(args) >= 2:
-                state["answer"] = args[2]
+                state["answer"] = args[1]
     else:
         await customization.finish("权限不足")
         return
@@ -57,12 +57,7 @@ async def _(event: GroupMessageEvent, state: T_State, arg: str = ArgPlainText("q
         json_code = f.read()
         json_code = json.loads(json_code)
         questions = json_code["questions"]
-        question = state["question"]
-        print("测试问题：\n\n")
-        print(questions)
-        print(question)
-        print(question in questions)
-        print("测试完成\n\n")
+        question = arg.strip()
         if question in questions:
             await customization.finish("添加失败，已存在这个自定义指令。")
             return
@@ -75,7 +70,6 @@ async def _(event: GroupMessageEvent, state: T_State, arg: Message = Arg("answer
     if not arg_text:
         if arg[0].type == "image":
             url = arg[0].data["url"]
-            question = state["question"]
             response = requests.get(url)
             with open(__file__.strip("__init__.py") + "customization.json", "r") as f:
                 json_code = f.read()
