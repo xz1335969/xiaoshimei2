@@ -150,7 +150,7 @@ async def _(event: GroupMessageEvent, state: T_State):
         state["confirm"] = 1
 
 
-@mine_sweep.got("confirm", prompt="本次使用的金币为{gold}，是否继续")
+@mine_sweep.got("confirm", prompt=MessageTemplate("本次使用的金币为{gold}，是否继续"))
 async def _(event: GroupMessageEvent, state: T_State):
     if state["confirm"] == "否":
         await mine_sweep.finish("已取消")
@@ -202,4 +202,4 @@ async def _(event: GroupMessageEvent, state: T_State):
         await mine_sweep.send(MessageSegment.image(game.show()))
         await mine_sweep.reject(report + "请输入您选择的格子，字母在前，用空格隔开，输入“取消”停止。例如：A1 B3")
 
-#  游戏结束还没写
+#  游戏结束还没写j

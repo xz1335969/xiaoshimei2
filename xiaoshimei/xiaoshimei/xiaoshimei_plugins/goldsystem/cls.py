@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment, MessageEvent, PrivateMes
     GROUP_ADMIN, GROUP_OWNER, GROUP_MEMBER, RequestEvent, GroupRequestEvent
 from nonebot.matcher import Matcher
 from nonebot.typing import T_State
-from nonebot.permission import SUPERUSER
+from nonebot.permission import SUPERUSER,Permission
 from nonebot.params import State, Depends, CommandArg, Arg, ArgPlainText
 from nonebot.rule import to_me
 import pymysql
@@ -17,8 +17,9 @@ UPDATE = 1
 INSERT = 2
 DELETE = 3
 
-
-
+async def authority3(bot:Bot,event:GroupMessageEvent):
+    user_id = event.user_id
+    group_id = event.group_id
 
 
 def authority(group_id, extra_name=None) -> int:
