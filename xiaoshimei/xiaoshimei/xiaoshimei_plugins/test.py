@@ -1,5 +1,5 @@
 import json
-with open(__file__.strip("test.py") + "test\\customization.json", "r") as f:
+with open(__file__.strip("custom_command.py") + "custom_command\\customization.json", "r") as f:
     json_code = f.read()
     json_code = json.loads(json_code)
     questions = json_code["questions"]
